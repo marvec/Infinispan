@@ -1,0 +1,39 @@
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:infinispan:config:5.1 http://www.infinispan.org/schemas/infinispan-config-5.1.xsd"
+  xmlns="urn:infinispan:config:5.1">
+
+  <global>
+    <transport>
+      <properties>
+         <property name="configurationFile" value="jgroups-tcp.xml"/>
+      </properties>
+    </transport>
+  </global>
+
+  <namedCache name="MyCache">
+    <eviction />
+    <clustering mode="distribution">
+      <async/>
+      <hash numOwners="3" />
+    </clustering>
+    <loaders>
+      <loader class="org.infinispan.loaders.cluster.ClusterCacheLoader" />
+      <loader class="org.infinispan.loaders.file.FileCacheStore"
+           fetchPersistentState="true"
+           purgerThreads="3"
+           purgeSynchronously="true"
+           ignoreModifications="false"
+           purgeOnStartup="false">
+        <properties>
+          <property name="location" value="." />
+        </properties>
+        <singletonStore enabled="true" pushStateWhenCoordinator="true" pushStateTimeout="20000" />
+        <async enabled="true" flushLockTimeout="15000" threadPoolSize="5" />
+      </loader>
+    </loaders>
+    <invocationBatching enabled="true" />
+    <transaction transactionManagerLookupClass="org.infinispan.transaction.lookup.GenericTransactionManagerLookup"
+      transactionMode="TRANSACTIONAL" lockingMode="OPTIMISTIC" autoCommit="true" useSynchronization="true"
+      syncRollbackPhase="false" syncCommitPhase="false" useEagerLocking="true" eagerLockSingleNode="true" />
+  </namedCache>
+</infinispan>
